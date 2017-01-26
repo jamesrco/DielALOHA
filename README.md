@@ -1,2 +1,2 @@
 # DielPAR
-Some analysis for Becker et al. (in prep); diel cycles in lipid concentrations at Station ALOHA
+Some analysis for Becker et al. (in prep); diel cycles in lipid concentrations at Station ALOHA. A contribution of the [Simons Collaboration on Ocean Processes and Ecology (SCOPE)](http://scope.soest.hawaii.edu)
