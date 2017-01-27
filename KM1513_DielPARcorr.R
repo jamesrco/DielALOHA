@@ -6,35 +6,43 @@
 
 ### load PAR data ####
 
-# PAR data (doi:10.7284/119285) downloaded from http://get.rvdata.us/cruise/KM1513/fileset/119285 on 26 Jan 2017
+# # if reading in raw individual data files
+# # per correspondence with Robert Arko at rvdata.us, most of these are corrected values in raw, arbitrary (voltage) units
+# 
+# # doi:10.7284/119285, from file KM1513_119285_metstation.tar.gz downloaded from http://get.rvdata.us/cruise/KM1513/fileset/119285 on 26 Jan 2017
+# 
+# # set data to where we extracted the .tar file downloaded from rvdata.us (KM1513_119285_metstation.tar.gz)
+# 
+# setwd("/Users/jrcollins/Code/DielPAR/data/met/raw/KM1513/119285/data/")
+# 
+# KM1513_Wxfiles = list.files(recursive=TRUE, full.names=FALSE, pattern="_raw") # get list of met data files to be parsed
+# 
+# # put in order
+# 
+# KM1513_Wxfiles = KM1513_Wxfiles[order(KM1513_Wxfiles)]
+# 
+# # iterate through list, parse and collect into single dasta frame
+# 
+# for (i in 1:length(KM1513_Wxfiles)) {
+#   
+#   this.Wxfile = read.delim(KM1513_Wxfiles[i], header = FALSE, sep="", colClasses = "character")
+#   
+#   if (i==1) { # it's the first file
+#     
+#     allKM1513.Wx = this.Wxfile
+#     
+#   } else { # it's not the first file, so rbind
+#     
+#     allKM1513.Wx = rbind(allKM1513.Wx,this.Wxfile)
+#     
+#   }
+#   
+# }
 
-# set data to where we extracted the .tar file downloade from rvdata.us
+# if loading in post-processed data (has values in actual units)
 
-setwd("/Users/jrcollins/Code/DielPAR/data/KM1513/119285/data/")
+# doi:10.7284/123652, from file KM1513_123652_metstation.tar.gz downloaded from http://get.rvdata.us/cruise/KM1513/fileset/123652 on 27 Jan 2017
 
-KM1513_Wxfiles = list.files(recursive=TRUE, full.names=FALSE, pattern="_raw") # get list of met data files to be parsed
-
-# put in order
-
-KM1513_Wxfiles = KM1513_Wxfiles[order(KM1513_Wxfiles)]
-
-# iterate through list, parse and collect into single dasta frame
-
-for (i in 1:length(KM1513_Wxfiles)) {
-  
-  this.Wxfile = read.delim(KM1513_Wxfiles[i], header = FALSE, sep="", colClasses = "character")
-  
-  if (i==1) { # it's the first file
-    
-    allKM1513.Wx = this.Wxfile
-    
-  } else { # it's not the first file, so rbind
-    
-    allKM1513.Wx = rbind(allKM1513.Wx,this.Wxfile)
-    
-  }
-  
-}
 
 # create, format timestamp
 
