@@ -1,0 +1,20 @@
+Source-Organization: Rolling Deck to Repository (R2R) Program
+Contact-Name: Data Manager
+Contact-Email: info@rvdata.us
+External-Description: Environmental sensor data and documentation from U.S. oceanographic research vessels
+Bagging-Date: 2017-01-26T22:00:17Z
+External-Identifier: doi:10.7284/123652
+Bag-Size: 141.3 MB
+Payload-Oxum: 148122546.1
+Bag-Group-Identifier: KM1513
+Bag-Count: 1 of ?
+Internal-Sender-Identifier: KM1513_123652_metstation
+Internal-Sender-Description: Fileset 123652 (metstation data) from cruise KM1513
+R2R-CruiseID: KM1513
+R2R-FilesetID: 123652
+R2R-DeviceType: metstation
+R2R-DeviceModel: Campbell CR3000
+R2R-FormatID: 100148
+R2R-ProcessType: 1 (processed)
+R2R-License: Attribution-NonCommercial-ShareAlike 3.0 (CC BY-NC-SA 3.0 US)
+R2R-Manifest: file-info.txt has fileid,md5sum,path,size(byte)
