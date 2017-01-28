@@ -15,25 +15,25 @@
 # 
 # setwd("/Users/jrcollins/Code/DielPAR/data/met/raw/KM1513/119285/data/")
 # 
-# KM1513_Wxfiles = list.files(recursive=TRUE, full.names=FALSE, pattern="_raw") # get list of met data files to be parsed
+# KM1513_metfiles = list.files(recursive=TRUE, full.names=FALSE, pattern="_raw") # get list of met data files to be parsed
 # 
 # # put in order
 # 
-# KM1513_Wxfiles = KM1513_Wxfiles[order(KM1513_Wxfiles)]
+# KM1513_metfiles = KM1513_metfiles[order(KM1513_metfiles)]
 # 
 # # iterate through list, parse and collect into single dasta frame
 # 
-# for (i in 1:length(KM1513_Wxfiles)) {
+# for (i in 1:length(KM1513_metfiles)) {
 #   
-#   this.Wxfile = read.delim(KM1513_Wxfiles[i], header = FALSE, sep="", colClasses = "character")
+#   this.metfile = read.delim(KM1513_metfiles[i], header = FALSE, sep="", colClasses = "character")
 #   
 #   if (i==1) { # it's the first file
 #     
-#     allKM1513.Wx = this.Wxfile
+#     allKM1513.met = this.metfile
 #     
 #   } else { # it's not the first file, so rbind
 #     
-#     allKM1513.Wx = rbind(allKM1513.Wx,this.Wxfile)
+#     allKM1513.met = rbind(allKM1513.met,this.metfile)
 #     
 #   }
 #   
@@ -46,13 +46,13 @@
 
 # create, format timestamp
 
-allKM1513.Wx$Timestamp_POSIXct = as.POSIXct(
+allKM1513.met$Timestamp_POSIXct = as.POSIXct(
   strptime(
-    paste(as.Date(as.numeric(allKM1513.Wx$V2), origin=as.Date("2015-01-01")),
+    paste(as.Date(as.numeric(allKM1513.met$V2), origin=as.Date("2015-01-01")),
           # *** assumes all of these data were from 2015 ***
-          allKM1513.Wx$V3,
-          allKM1513.Wx$V4,
-          allKM1513.Wx$V5,
+          allKM1513.met$V3,
+          allKM1513.met$V4,
+          allKM1513.met$V5,
           sep = "-"),
     "%Y-%m-%d-%H-%M-%S"),format='%Y-%m-%d %T', tz = "HST")
 
