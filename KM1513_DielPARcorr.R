@@ -183,6 +183,8 @@ for (i in 1:nrow(KM1513_intlipids.ng_L_d)) {
 
 ### exploring some correlations ###
 
+# note that these include lipid data from all dates, including 30 and 31 July, when we not did not collect a full day's worth of lipid data sufficient for calculating meaningful integrals
+
 # date for date
 
 # a vector of PAR integrals to match dates in KM1513.lipiddates
@@ -277,3 +279,37 @@ pairs(~KM1513_PARint_J_d.match.lagged+KM1513_lipidmax.ng_L$DGCC+
 
 # seems like most potential in lagged PAR integrals vs. lipid integrals (no possible correlations evident in using just lipid concentration maxima)
 
+# taking a closer look...
+# excluding cols 5 and 6 (30 and 31 July, the dates on which we did not collect a full day of samples sufficient for calculating complete daily integrals)
+
+# scatterplot matrix
+pairs(~KM1513_PARint_J_d.match.lagged[-c(5,6)]+KM1513_intlipids.ng_L_d$DGCC[-c(5,6)]+
+        KM1513_intlipids.ng_L_d$DGTS.DGTS[-c(5,6)]+
+        KM1513_intlipids.ng_L_d$DGDG[-c(5,6)]+
+        KM1513_intlipids.ng_L_d$MGDG[-c(5,6)]+
+        KM1513_intlipids.ng_L_d$PC[-c(5,6)]+
+        KM1513_intlipids.ng_L_d$PE[-c(5,6)]+
+        KM1513_intlipids.ng_L_d$PG[-c(5,6)]+
+        KM1513_intlipids.ng_L_d$SQDG[-c(5,6)]+
+        KM1513_intlipids.ng_L_d$TAG[-c(5,6)]+
+        KM1513_intlipids.ng_L_d$PQ[-c(5,6)]+
+        KM1513_intlipids.ng_L_d$UQ[-c(5,6)]+
+        KM1513_intlipids.ng_L_d$Chl[-c(5,6)], labels = c("PARint_J_d",colnames(KM1513_intlipids.ng_L_d)[2:ncol(KM1513_intlipids.ng_L_d)]))
+
+cor(data.frame(KM1513_PARint_J_d.match.lagged[-c(5,6)],KM1513_intlipids.ng_L_d[-c(5,6),2:13]), use = "complete.obs")
+
+library(Hmisc)
+
+rcorr(as.matrix(data.frame(KM1513_PARint_J_d.match.lagged[-c(5,6)],KM1513_intlipids.ng_L_d[-c(5,6),2:13])))
+
+# one example
+
+x = KM1513_PARint_J_d.match.lagged[-c(5,6)]
+y = KM1513_intlipids.ng_L_d$TAG[-c(5,6)]
+TAG_PAR.lm = lm(y~x)
+plot(x,y,
+     ylab = c("Net TAG flux (ng/L/day)"),
+     xlab = c("PAR on previous day (Joules/day)"))
+abline(TAG_PAR.lm)
+summary(TAG_PAR.lm)
+text(16e6, 6e7, "p = 0.08, r^2 = 0.58")
