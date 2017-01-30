@@ -121,7 +121,7 @@ allKM1513.red.times_s = as.numeric(rev(allKM1513.time.red[length(allKM1513.time.
 
 # preallocate vector for results
 
-KM1513.metdates = unique(strftime(allKM1513.time.red, format = "%D")) # list of dates in the time series
+KM1513.metdates = unique(strftime(allKM1513.time.red, format = "%D", tz = "HST", usetz = FALSE)) # list of dates in the time series
 KM1513_PARint_J_d = vector(mode = "numeric", length = length(KM1513.metdates))
 
 # integrals by day
@@ -157,7 +157,7 @@ KM1513_lipids.times_s = as.numeric(rev(KM1513_lipids$Timestamp_POSIXct[
 
 # preallocate data frame for results
 
-KM1513.lipiddates = unique(strftime(KM1513_lipids$Timestamp_POSIXct, format = "%D")) # list of dates in the time series
+KM1513.lipiddates = unique(strftime(KM1513_lipids$Timestamp_POSIXct, format = "%D", tz = "HST", usetz = FALSE)) # list of dates in the time series
 KM1513_intlipids.ng_L_d = as.data.frame(matrix(nrow = length(KM1513.lipiddates),
                                  ncol = ncol(KM1513_lipids) - 4 + 1))
 colnames(KM1513_intlipids.ng_L_d) =
@@ -171,7 +171,7 @@ for (i in 1:nrow(KM1513_intlipids.ng_L_d)) {
   for (j in 2:ncol(KM1513_intlipids.ng_L_d)) {
     
     # get time index to data
-    ind_todays.data = strftime(KM1513_lipids$Timestamp_POSIXct, format = "%D")==KM1513.lipiddates[i]
+    ind_todays.data = strftime(KM1513_lipids$Timestamp_POSIXct, format = "%D", tz = "HST", usetz = FALSE)==KM1513.lipiddates[i]
     
     KM1513_intlipids.ng_L_d[i,j] =
       caTools::trapz(KM1513_lipids.times_s[ind_todays.data], # there's at least one other pkg with a trapz function
@@ -224,3 +224,56 @@ pairs(~KM1513_PARint_J_d.match.lagged+KM1513_intlipids.ng_L_d$DGCC+
         KM1513_intlipids.ng_L_d$PQ+
         KM1513_intlipids.ng_L_d$UQ+
         KM1513_intlipids.ng_L_d$Chl)
+
+# what if we consider PAR against the maximum observed lipid concentration on a given day, rather than the integral
+
+# pull out max values for each lipid on a given date and flow into a new data frame
+
+KM1513_lipidmax.ng_L = as.data.frame(matrix(nrow = length(KM1513.lipiddates),
+                                            ncol = ncol(KM1513_lipids) - 4 + 1))
+colnames(KM1513_lipidmax.ng_L) =
+  c("Date",colnames(KM1513_lipids)[4:(ncol(KM1513_lipids)-1)])
+KM1513_lipidmax.ng_L$Date = as.POSIXct(KM1513.lipiddates, format = "%m/%d/%y")
+
+# maxima by day, by lipid
+
+for (i in 1:nrow(KM1513_lipidmax.ng_L)) {
+  
+  for (j in 2:ncol(KM1513_lipidmax.ng_L)) {
+    
+    KM1513_lipidmax.ng_L[i,j] =
+      max(KM1513_lipids[strftime(KM1513_lipids$Timestamp_POSIXct, format = "%D", tz = "HST", usetz = FALSE)==KM1513.lipiddates[i],
+                        colnames(KM1513_lipids)==colnames(KM1513_intlipids.ng_L_d)[j]], na.rm = TRUE)
+
+  }
+  
+}
+
+# scatterplot matrix, no lag
+pairs(~KM1513_PARint_J_d.match+KM1513_lipidmax.ng_L$DGCC+
+        KM1513_lipidmax.ng_L$DGTS.DGTS+
+        KM1513_lipidmax.ng_L$DGDG+
+        KM1513_lipidmax.ng_L$MGDG+
+        KM1513_lipidmax.ng_L$PC+
+        KM1513_lipidmax.ng_L$PG+
+        KM1513_lipidmax.ng_L$TAG+
+        KM1513_lipidmax.ng_L$SQDG+
+        KM1513_lipidmax.ng_L$PQ+
+        KM1513_lipidmax.ng_L$UQ+
+        KM1513_lipidmax.ng_L$Chl)
+
+# scatterplot matrix, with lag
+pairs(~KM1513_PARint_J_d.match.lagged+KM1513_lipidmax.ng_L$DGCC+
+        KM1513_lipidmax.ng_L$DGTS.DGTS+
+        KM1513_lipidmax.ng_L$DGDG+
+        KM1513_lipidmax.ng_L$MGDG+
+        KM1513_lipidmax.ng_L$PC+
+        KM1513_lipidmax.ng_L$PG+
+        KM1513_lipidmax.ng_L$TAG+
+        KM1513_lipidmax.ng_L$SQDG+
+        KM1513_lipidmax.ng_L$PQ+
+        KM1513_lipidmax.ng_L$UQ+
+        KM1513_lipidmax.ng_L$Chl)
+
+# seems like most potential in lagged PAR integrals vs. lipid integrals (no possible correlations evident in using just lipid concentration maxima)
+
