@@ -101,14 +101,38 @@ mav.10 <- function(x,n=10){filter(x,rep(1/n,n), sides=2)}
 
 allKM1513.PAR.smooth = mav.10(allKM1513.met$PAR_W_m2) # apply function
 
-# now, subset to every 10th data point; create matching timestamp series
+# now, subset to every 20th data point; create matching timestamp series
 
-allKM1513.PAR.red = allKM1513.PAR.smooth[seq(from = 1, to = length(allKM1513.PAR.smooth), by = 10)]
-allKM1513.time.red = allKM1513.met$Timestamp_POSIXct[seq(from = 1, to = length(allKM1513.PAR.smooth), by = 10)]
+allKM1513.PAR.red = allKM1513.PAR.smooth[seq(from = 1, to = length(allKM1513.PAR.smooth), by = 20)]
+allKM1513.time.red = allKM1513.met$Timestamp_POSIXct[seq(from = 1, to = length(allKM1513.PAR.smooth), by = 20)]
+
+# remove some spurious data
+
+allKM1513.PAR.red[allKM1513.PAR.red<-5] = NA
+allKM1513.PAR.red[allKM1513.PAR.red>800] = NA
 
 # plot the reduced, simplified series
 
 plot(allKM1513.time.red,allKM1513.PAR.red)
+
+# create a plot for file
+
+par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
+
+pdf(file = "KM1513_PARseries.pdf",
+    width = 8, height = 6, pointsize = 12,
+    bg = "white")
+
+par(mar=c(5,5,1,1))
+
+plot(allKM1513.time.red,allKM1513.PAR.red,
+     ylab = expression(paste("Photosynthetically active radiation (PAR; W ",m^-2,")",sep='')),
+     xlab = "Date (2015)",
+     ylim = c(0,800),
+     yaxs = "i",
+     type = "l")
+
+dev.off()
 
 ### some daily PAR integrals ###
 
