@@ -73,7 +73,7 @@ allKM1513.met$Timestamp_POSIXct = as.POSIXct(
 
 plot(allKM1513.met$Timestamp_POSIXct, allKM1513.met$PAR_W_m2)
 
-### load lipid data ###
+### load lipid concentration data ###
 
 # from spreadsheet from KB on 1/26/17; all concentrations are corrected using response factors
 # concentrations, by lipid class, in ng per L
@@ -90,6 +90,18 @@ KM1513_lipids.w_out = read.csv("/Users/jrcollins/Code/DielPAR/data/Lipid concent
 
 KM1513_lipids$Timestamp_POSIXct = as.POSIXct(strptime(KM1513_lipids$Timestamp,
                                                       "%m/%d/%y %H:%M"),format='%Y-%m-%d %T', tz = "HST")
+
+### load TAG production rates (other spreadsheet from KB) ###
+
+KM1513_TAGprod = read.csv("/Users/jrcollins/Code/DielPAR/data/TAG production rates (from KB).csv",
+                         header = T, skip = 0)
+
+# format timestamp
+
+KM1513_TAGprod$Timestamp_POSIXct = as.POSIXct(strptime(as.character(KM1513_TAGprod$Day),
+                                                      "%m/%d/%y"),format='%Y-%m-%d %T', tz = "HST")
+
+KM1513.TAGproddates = unique(strftime(KM1513_TAGprod$Timestamp_POSIXct, format = "%D", tz = "HST", usetz = FALSE)) # list of dates in the time series
 
 ### simplifying the PAR data ###
 
@@ -337,3 +349,24 @@ plot(x,y,
 abline(TAG_PAR.lm)
 summary(TAG_PAR.lm)
 text(16e6, 6e7, "p = 0.08, r^2 = 0.58")
+
+# now, plots using the TAG production rates
+
+# a vector of PAR integrals to match dates in KM1513.lipiddates
+KM1513_PARint_J_d.match.TAGprod = KM1513_PARint_J_d[KM1513.metdates %in% KM1513.TAGproddates]
+
+KM1513_PARint_J_d.match..TAGprod.lagged = KM1513_PARint_J_d[KM1513.metdates %in% 
+                                                     strftime(
+                                                       as.POSIXct(KM1513.TAGproddates, format = "%m/%d/%y")-
+                                                         24*60*60*lagtime,
+                                                       format = "%D")]
+
+x = KM1513_PARint_J_d.match..TAGprod.lagged
+y = KM1513_TAGprod$ng.TAG.L.1.d.1
+TAGprod_PAR.lm = lm(y~x)
+plot(x,y,
+     ylab = c("TAG production rate (ng/L/day)"),
+     xlab = c("PAR on previous day (Joules/day)"))
+abline(TAGprod_PAR.lm)
+summary(TAGprod_PAR.lm)
+
