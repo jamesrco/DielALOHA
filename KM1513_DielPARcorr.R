@@ -67,7 +67,11 @@ allKM1513.met$Timestamp_POSIXct = as.POSIXct(
           allKM1513.met$V4,
           allKM1513.met$V5,
           sep = "-"),
-    "%Y-%m-%d-%H-%M-%S"),format='%Y-%m-%d %T', tz = "HST")
+    "%Y-%m-%d-%H-%M-%S"),format='%Y-%m-%d %T', tz = "GMT")
+
+# change time zone
+
+attributes(allKM1513.met$Timestamp_POSIXct)$tzone = "HST"
 
 # plot the PAR data to make sure it makes sense
 
@@ -120,12 +124,13 @@ allKM1513.time.red = allKM1513.met$Timestamp_POSIXct[seq(from = 1, to = length(a
 
 # remove some spurious data
 
-allKM1513.PAR.red[allKM1513.PAR.red<-5] = NA
+allKM1513.PAR.red[allKM1513.PAR.red<0] = 0
 allKM1513.PAR.red[allKM1513.PAR.red>800] = NA
 
 # plot the reduced, simplified series
 
-plot(allKM1513.time.red,allKM1513.PAR.red)
+plot(allKM1513.time.red,
+     allKM1513.PAR.red)
 
 # create a plot for file
 
@@ -142,7 +147,12 @@ plot(allKM1513.time.red,allKM1513.PAR.red,
      xlab = "Date (2015)",
      ylim = c(0,800),
      yaxs = "i",
-     type = "l")
+     type = "l",
+     xaxt = "n")
+
+# create date ticks
+r = as.POSIXct(round(range(allKM1513.time.red), "days"))
+axis.POSIXct(1, at = seq(r[1], r[2], by = "day"), format = "%d %b")
 
 dev.off()
 
@@ -165,17 +175,26 @@ KM1513_PARint_J_d = vector(mode = "numeric", length = length(KM1513.metdates))
 for (i in 1:length(KM1513_PARint_J_d)) {
   
   # get index to data for date i
-  ind_todays.data = strftime(allKM1513.time.red, format = "%D")==KM1513.metdates[i]
+  ind_todays.data = strftime(allKM1513.time.red, format = "%D", tz = "HST", usetz = FALSE)==KM1513.metdates[i]
+  
+  good.allKM1513.red.times_s = allKM1513.red.times_s[ind_todays.data]
+  good.allKM1513.PAR.red = allKM1513.PAR.red[ind_todays.data]
+  good.allKM1513.red.times_s = good.allKM1513.red.times_s[!is.na(good.allKM1513.PAR.red)]
+  good.allKM1513.PAR.red = good.allKM1513.PAR.red[!is.na(good.allKM1513.PAR.red)]
   
   KM1513_PARint_J_d[i] =
-  caTools::trapz(allKM1513.red.times_s[ind_todays.data], # there's at least one other pkg with a trapz function
-                 allKM1513.PAR.red[ind_todays.data])
+  caTools::trapz(good.allKM1513.red.times_s, # there's at least one other pkg with a trapz function
+                 good.allKM1513.PAR.red)
   
 }
 
 # take a look at the integrals
 
 plot(as.POSIXct(KM1513.metdates, format = "%m/%d/%y"),KM1513_PARint_J_d)
+
+# eliminate last day, since we didn't have complete data
+
+KM1513_PARint_J_d[c(length(KM1513_PARint_J_d))] = NA
 
 ### some daily net lipid fluxes, by class ###
 
@@ -194,6 +213,10 @@ KM1513_lipids.times_s = as.numeric(rev(KM1513_lipids$Timestamp_POSIXct[
 # preallocate data frame for results
 
 KM1513.lipiddates = unique(strftime(KM1513_lipids$Timestamp_POSIXct, format = "%D", tz = "HST", usetz = FALSE)) # list of dates in the time series
+
+# correct for days with incomplete data
+KM1513.lipiddates = KM1513.lipiddates[-c(5,6,9)]
+
 KM1513_intlipids.ng_L_d = as.data.frame(matrix(nrow = length(KM1513.lipiddates),
                                  ncol = ncol(KM1513_lipids) - 4 + 1))
 colnames(KM1513_intlipids.ng_L_d) =
@@ -311,44 +334,27 @@ pairs(~KM1513_PARint_J_d.match.lagged+KM1513_lipidmax.ng_L$DGCC+
         KM1513_lipidmax.ng_L$SQDG+
         KM1513_lipidmax.ng_L$PQ+
         KM1513_lipidmax.ng_L$UQ+
-        KM1513_lipidmax.ng_L$Chl)
-
-# seems like most potential in lagged PAR integrals vs. lipid integrals (no possible correlations evident in using just lipid concentration maxima)
+        KM1513_lipidmax.ng_L$Chl,
+      labels = c("PAR_int","DGCC","DGTS_DGTA","DGDG","MGDG","PC","PG","TAG","SQDG","PQ","UQ","Chl"))
 
 # taking a closer look...
-# excluding cols 5 and 6 (30 and 31 July, the dates on which we did not collect a full day of samples sufficient for calculating complete daily integrals)
 
-# scatterplot matrix
-pairs(~KM1513_PARint_J_d.match.lagged[-c(5,6)]+KM1513_intlipids.ng_L_d$DGCC[-c(5,6)]+
-        KM1513_intlipids.ng_L_d$DGTS.DGTS[-c(5,6)]+
-        KM1513_intlipids.ng_L_d$DGDG[-c(5,6)]+
-        KM1513_intlipids.ng_L_d$MGDG[-c(5,6)]+
-        KM1513_intlipids.ng_L_d$PC[-c(5,6)]+
-        KM1513_intlipids.ng_L_d$PE[-c(5,6)]+
-        KM1513_intlipids.ng_L_d$PG[-c(5,6)]+
-        KM1513_intlipids.ng_L_d$SQDG[-c(5,6)]+
-        KM1513_intlipids.ng_L_d$TAG[-c(5,6)]+
-        KM1513_intlipids.ng_L_d$PQ[-c(5,6)]+
-        KM1513_intlipids.ng_L_d$UQ[-c(5,6)]+
-        KM1513_intlipids.ng_L_d$Chl[-c(5,6)], labels = c("PARint_J_d",colnames(KM1513_intlipids.ng_L_d)[2:ncol(KM1513_intlipids.ng_L_d)]))
-
-cor(data.frame(KM1513_PARint_J_d.match.lagged[-c(5,6)],KM1513_intlipids.ng_L_d[-c(5,6),2:13]), use = "complete.obs")
+cor(data.frame(KM1513_PARint_J_d.match.lagged,KM1513_lipidmax.ng_L[,2:13]), use = "complete.obs")
 
 library(Hmisc)
 
-rcorr(as.matrix(data.frame(KM1513_PARint_J_d.match.lagged[-c(5,6)],KM1513_intlipids.ng_L_d[-c(5,6),2:13])))
+rcorr(as.matrix(data.frame(KM1513_PARint_J_d.match.lagged,KM1513_lipidmax.ng_L[,2:13])))
 
 # one example
 
-x = KM1513_PARint_J_d.match.lagged[-c(5,6)]
-y = KM1513_intlipids.ng_L_d$TAG[-c(5,6)]
+x = KM1513_PARint_J_d.match.lagged
+y = KM1513_lipidmax.ng_L$TAG
 TAG_PAR.lm = lm(y~x)
 plot(x,y,
-     ylab = c("Net TAG flux (ng/L/day)"),
+     ylab = c("Max. TAG concentration (ng/L)"),
      xlab = c("PAR on previous day (Joules/day)"))
 abline(TAG_PAR.lm)
 summary(TAG_PAR.lm)
-text(16e6, 6e7, "p = 0.08, r^2 = 0.58")
 
 # now, plots using the TAG production rates
 
@@ -370,3 +376,52 @@ plot(x,y,
 abline(TAGprod_PAR.lm)
 summary(TAGprod_PAR.lm)
 
+### examining hour of max. rate of production (slope of curve) vs. max PAR ###
+
+# obtain list of unique times of day for which we have lipid concentrations
+unique.times = unique(strftime(KM1513_lipids$Timestamp_POSIXct, format = "%H:%M", tz = "HST", usetz = FALSE))
+
+# preallocate df to hold time of day averages
+KM1513_TAG.timeavg = data.frame(unique.times,rep(NA,length(unique.times)))
+colnames(KM1513_TAG.timeavg)[2] = c("TAGconc_avg_ng_L")
+
+# calculate averages by time of day
+# don't want them if we only have one concentration for that time
+for (i in 1:nrow(KM1513_TAG.timeavg)) {
+  
+  
+  concs.thistime = KM1513_lipids$TAG[strftime(KM1513_lipids$Timestamp_POSIXct, format = "%H:%M", tz = "HST", usetz = FALSE) ==
+                           KM1513_TAG.timeavg[i,1]]
+  
+  if (length(concs.thistime)>1) {
+    
+    KM1513_TAG.timeavg[i,2] = mean(concs.thistime, na.rm = TRUE)  
+    
+  }
+  
+}
+
+# plot to take a look
+plot(as.POSIXct(KM1513_TAG.timeavg$unique.times, format = "%H:%M"),
+KM1513_TAG.timeavg$TAGconc_avg_ng_L)
+
+# calculate avg. time of max. PAR intensity
+
+# preallocate df
+KM1513.maxPAR = data.frame(KM1513.metdates,rep(NA,length(KM1513.metdates)),rep(NA,length(KM1513.metdates)))
+colnames(KM1513.maxPAR)[2:3] = c("MaxPAR","MaxPARtime")
+
+for (i in 1:nrow(KM1513.maxPAR)) {
+  
+  KM1513.maxPAR[i,2] =
+    max(allKM1513.PAR.red[strftime(allKM1513.time.red, format = "%D", tz = "HST", usetz = FALSE) ==
+                            KM1513.maxPAR[i,1]], na.rm = T)
+  
+  KM1513.maxPAR[i,3] =
+    strftime(allKM1513.time.red[which(allKM1513.PAR.red==KM1513.maxPAR[i,2])],
+             format = "%H:%M", tz = "HST", usetz = FALSE)
+}
+
+# calculate average maxPARtime
+
+strftime(mean(as.POSIXct(KM1513.maxPAR$MaxPARtime[1:12], format = "%H:%M")), format = "%H:%M")
