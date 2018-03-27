@@ -113,26 +113,42 @@ KM1513.TAGproddates = unique(strftime(KM1513_TAGprod$Timestamp_POSIXct, format =
 
 # first, can simplify the dataset a bit (don't need it at 1 s intervals; in addition, there is some obviously spurious data, based on inspection of full plot, above)
 
-# define a simple 10 s moving average function
+# define some moving average functions
 
-mav.10 <- function(x,n=10){filter(x,rep(1/n,n), sides=2)}
+mav.10 <- function(x,n=10){filter(x,rep(1/n,n), sides=2)} # 10 seconds
+mav.30 <- function(x,n=30){filter(x,rep(1/n,n), sides=2)} # 30 seconds
 
-allKM1513.PAR.smooth = mav.10(allKM1513.met$PAR_W_m2) # apply function
+allKM1513.PAR.smooth.10 = mav.10(allKM1513.met$PAR_W_m2) # apply function
+allKM1513.PAR.smooth.30 = mav.30(allKM1513.met$PAR_W_m2) # apply function
 
-# now, subset to every 20th data point; create matching timestamp series
+# some plots
 
-allKM1513.PAR.red = allKM1513.PAR.smooth[seq(from = 1, to = length(allKM1513.PAR.smooth), by = 20)]
-allKM1513.time.red = allKM1513.met$Timestamp_POSIXct[seq(from = 1, to = length(allKM1513.PAR.smooth), by = 20)]
+# 10s moving avg
+
+# subset to every 20th data point; create matching timestamp series
+allKM1513.PAR.red10 = allKM1513.PAR.smooth.10[seq(from = 1, to = length(allKM1513.PAR.smooth.10), by = 20)]
+allKM1513.time.red10 = allKM1513.met$Timestamp_POSIXct[seq(from = 1, to = length(allKM1513.PAR.smooth.10), by = 20)]
 
 # remove some spurious data
-
-allKM1513.PAR.red[allKM1513.PAR.red<0] = 0
-allKM1513.PAR.red[allKM1513.PAR.red>800] = NA
+allKM1513.PAR.red10[allKM1513.PAR.red10<0] = 0
+allKM1513.PAR.red10[allKM1513.PAR.red10>800] = NA
 
 # plot the reduced, simplified series
+plot(allKM1513.time.red10,
+     allKM1513.PAR.red10)
 
-plot(allKM1513.time.red,
-     allKM1513.PAR.red)
+# 30s moving avg
+
+allKM1513.PAR.red30 = allKM1513.PAR.smooth.30[seq(from = 1, to = length(allKM1513.PAR.smooth.30), by = 60)]
+allKM1513.time.red30 = allKM1513.met$Timestamp_POSIXct[seq(from = 1, to = length(allKM1513.PAR.smooth.30), by = 60)]
+
+# remove some spurious data
+allKM1513.PAR.red30[allKM1513.PAR.red30<0] = 0
+allKM1513.PAR.red30[allKM1513.PAR.red30>800] = NA
+
+# plot the reduced, simplified series
+plot(allKM1513.time.red30,
+     allKM1513.PAR.red30)
 
 # create a plot for file
 
