@@ -84,12 +84,12 @@ plot(allKM1513.met$Timestamp_POSIXct, allKM1513.met$PAR_W_m2)
 # from spreadsheet from KB on 1/26/17; all concentrations are corrected using response factors
 # concentrations, by lipid class, in ng per L
 
-KM1513_lipids = read.csv("/Users/jamesrco/Code/DielPAR/data/Lipid concentration_diel (from KB).csv",
+KM1513_lipids = read.csv("/Users/jamesrco/Code/DielPAR/data/lipids/Lipid concentration_diel (from KB).csv",
                          header = T, skip = 1)
 
 # a version of the data with "outliers" included
 
-KM1513_lipids.w_out = read.csv("/Users/jamesrco/Code/DielPAR/data/Lipid concentration_diel (from KB)_w_outliers.csv",
+KM1513_lipids.w_out = read.csv("/Users/jamesrco/Code/DielPAR/data/lipids/Lipid concentration_diel (from KB)_w_outliers.csv",
                          header = T, skip = 1)
 
 # format timestamp
@@ -99,7 +99,7 @@ KM1513_lipids$Timestamp_POSIXct = as.POSIXct(strptime(KM1513_lipids$Timestamp,
 
 ### load TAG production rates (other spreadsheet from KB) ###
 
-KM1513_TAGprod = read.csv("/Users/jamesrco/Code/DielPAR/data/TAG production rates (from KB).csv",
+KM1513_TAGprod = read.csv("/Users/jamesrco/Code/DielPAR/data/lipids/TAG production rates (from KB).csv",
                          header = T, skip = 0)
 
 # format timestamp
