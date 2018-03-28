@@ -150,6 +150,14 @@ allKM1513.PAR.red30[allKM1513.PAR.red30>800] = NA
 plot(allKM1513.time.red30,
      allKM1513.PAR.red30)
 
+# save as a .csv
+
+write.table(data.frame(strftime(as.POSIXlt(allKM1513.time.red30), "%Y-%m-%dT%H:%M:%S%z"),allKM1513.PAR.red30),
+            sep = ",",
+            file = "~/Code/DielPAR/data/met/processed/KM1513_shipboard_PAR.30smav.W_m2.csv",
+            row.names = FALSE,
+            col.names = c("Timestamp_PAR_HST","KM1513_shipboard_PAR_30s.mav_W_m2"))
+
 # create a plot for file
 
 par(oma=c(0,0,0,0)) # set margins; large dataset seems to require this
