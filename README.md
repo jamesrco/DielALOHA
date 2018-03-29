@@ -10,3 +10,4 @@ Some links to relevant data sources:
 1. Public SCOPE data: http://scope.soest.hawaii.edu/data/hoelegacy/data/
 2. KM1513 data from R2R: http://www.rvdata.us/catalog/KM1513
 3. KM1513 landing page on BCO-DMO: https://www.bco-dmo.org/deployment/640720
+4. KM1513 CTD tearsheets: http://hahana.soest.hawaii.edu/hoelegacy/documents/HOE-Legacy-2A_Cruise_Binder.pdf
