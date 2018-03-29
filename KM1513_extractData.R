@@ -141,3 +141,9 @@ for (i in 1:nrow(KM1513_RNA_sample_matchedDielData)) {
     matched.PARdata
   
 }
+
+# finally, export the matched data to a CSV file
+
+write.csv(KM1513_RNA_sample_matchedDielData,
+          file = "~/Code/DielPAR/data/data_products/KM1513_RNA_sample_matchedDielData.csv",
+          row.names = FALSE)
