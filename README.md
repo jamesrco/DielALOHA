@@ -3,7 +3,7 @@ Data products (and the scripts used to produce them) from cruise KM1513 aboard t
 
 [KM1513_DielPARcorr.R](KM1513_DielPARcorr.R): Some analysis for Becker et al. (in prep), focusing on diel cycles in lipid concentrations at Station ALOHA.
 
-[KM1513_extractData.R](KM1513_extractData.R): Extracts desired CTD and underway/met ship data corresponding to exact CTD bottle closure times. To be used in manuscript in prep by @sachacoesel
+[KM1513_extractData.R](KM1513_extractData.R): Extracts desired CTD and underway/met ship data corresponding to exact CTD bottle closure times. To be used in manuscript in prep by *[@sachacoesel](https://github.com/sachacoesel)*
 
 Some links to relevant data sources:
 
