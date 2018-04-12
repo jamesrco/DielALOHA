@@ -1,9 +1,9 @@
 # DielALOHA (formerly DielPAR)
 Some data products (and the scripts used to produce them) from cruise KM1513 aboard the R/V Kilo Moana. This was the [Simons Collaboration on Ocean Processes and Ecology (SCOPE)](http://scope.soest.hawaii.edu) HOE-Legacy 2A "diel" cruise.
 
-[KM1513_DielPARcorr.R](KM1513_DielPARcorr.R): Some analysis for Becker et al. (in prep), focusing on diel cycles in lipid concentrations at Station ALOHA.
+[KM1513_DielPARcorr.R](R/KM1513_DielPARcorr.R): Some analysis for Becker et al. (in prep), focusing on diel cycles in lipid concentrations at Station ALOHA.
 
-[KM1513_extractData.R](KM1513_extractData.R): Extracts desired CTD and underway/met ship data corresponding to exact CTD bottle closure times. To be used in manuscript in prep by **[@sachacoesel](https://github.com/sachacoesel)**
+[KM1513_extractData.R](R/KM1513_extractData.R): Extracts desired CTD and underway/met ship data corresponding to exact CTD bottle closure times. To be used in manuscript in prep by **[@sachacoesel](https://github.com/sachacoesel)**
 
 Some links to relevant data sources:
 
