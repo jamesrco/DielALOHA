@@ -5,6 +5,8 @@ Some data products (and the scripts used to produce them) from cruise KM1513 abo
 
 [KM1513_extractData.R](R/KM1513_extractData.R): Extracts desired CTD and underway/met ship data corresponding to exact CTD bottle closure times. To be used in manuscript in prep by **[@sachacoesel](https://github.com/sachacoesel)**
 
+[ALOHAdielCurveFit.ipynb](python3/ALOHAdielCurveFit.ipynb): Jupyter Notebook (first real one I've ever done!) with curve fits to Bryn's sulfur compound data and some SeaFlow data
+
 Some links to relevant data sources:
 
 1. Public SCOPE data: http://scope.soest.hawaii.edu/data/hoelegacy/data/
